@@ -4,7 +4,7 @@ Add, remove, and edit servers without restarting BungeeCord!
 Have you ever wanted to add or remove a server, change an ip address or port, or even change the motd without restarting BungeeCord? Well now you can! (yw)
 
 ### Download
-Download here on Spigot: --> insertLink <--
+Download here on Spigot: http://www.spigotmc.org/resources/bungeeservermanager.7388/
 
 ### Installing
 Just drag the plugin file into your BungeeCord's plugin server.
