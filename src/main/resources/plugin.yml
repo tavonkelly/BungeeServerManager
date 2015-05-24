@@ -1,0 +1,4 @@
+name: ${project.artifactId}
+main: pw.teg.bsm.BungeeServerManager
+version: ${project.version}
+author: Teg
