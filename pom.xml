@@ -14,13 +14,6 @@
     <artifactId>BungeeServerManager</artifactId>
     <version>1.0.15-SNAPSHOT</version>
 
-    <repositories>
-        <repository>
-            <id>teg-repo</id>
-            <url>http://repo.teg.pw/content/repositories/snapshots/</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency>
             <groupId>net.md-5</groupId>
