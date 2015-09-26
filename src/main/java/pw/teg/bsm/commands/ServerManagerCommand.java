@@ -319,7 +319,7 @@ public class ServerManagerCommand extends Command {
 
                 ServerInfo info = ServerHelper.getServerInfo(args[1]);
                 StringBuilder builder = new StringBuilder();
-                
+
                 for (int i = 3; i < args.length; i++) {
                     builder.append(args[i]).append(" ");
                 }
