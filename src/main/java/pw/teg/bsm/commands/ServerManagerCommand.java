@@ -318,13 +318,8 @@ public class ServerManagerCommand extends Command {
                 }
 
                 ServerInfo info = ServerHelper.getServerInfo(args[1]);
-
-                if (info == null) {
-                    sender.sendMessage(TextComponent.fromLegacyText(prefix + "The server " + ChatColor.GREEN + args[1] + ChatColor.GRAY + " does not exist."));
-                    return;
-                }
-
                 StringBuilder builder = new StringBuilder();
+                
                 for (int i = 3; i < args.length; i++) {
                     builder.append(args[i]).append(" ");
                 }
