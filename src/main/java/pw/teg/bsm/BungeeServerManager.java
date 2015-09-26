@@ -18,6 +18,7 @@ public class BungeeServerManager extends Plugin {
         api = new ServerManagerAPI();
 
         getProxy().getPluginManager().registerCommand(this, new ServerManagerCommand());
+        
     }
 
     public static BungeeServerManager get() {
