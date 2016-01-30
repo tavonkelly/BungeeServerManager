@@ -244,7 +244,7 @@ public class ServerManagerCommand extends Command {
                 }
 
                 if (args[2].equalsIgnoreCase("name")) {
-                    if (ServerHelper.serverExists(args[3], true)) {
+                    if (ServerHelper.serverExists(args[3])) {
                         sender.sendMessage(TextComponent.fromLegacyText(prefix + "The server " + ChatColor.GREEN + args[1] + ChatColor.GRAY + " already exists."));
                         return;
                     }

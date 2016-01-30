@@ -43,7 +43,7 @@ public class ServerManagerAPI {
         return true;
     }
 
-    public boolean serverExists(String name, boolean checkCase) {
-        return ServerHelper.serverExists(name, checkCase);
+    public boolean serverExists(String name) {
+        return ServerHelper.serverExists(name);
     }
 }

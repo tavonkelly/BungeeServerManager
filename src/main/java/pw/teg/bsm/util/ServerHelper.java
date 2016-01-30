@@ -12,28 +12,8 @@ public class ServerHelper {
         return getServerInfo(name) != null;
     }
 
-    public static boolean serverExists(String name, boolean checkCase) {
-        if (checkCase) {
-            for (String s : getServers().keySet()) {
-                if (name.equals(s)) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        return serverExists(name);
-    }
-
     public static ServerInfo getServerInfo(String name) {
-        for (String s : getServers().keySet()) {
-            if (s.equalsIgnoreCase(name)) {
-                return getServers().get(s);
-            }
-        }
-
-        return null;
+        return getServers().get(name);
     }
 
     public static void addServer(ServerInfo serverInfo) {
