@@ -1,9 +1,9 @@
 package pw.teg.bsm.commands;
 
 import com.google.common.base.Joiner;
-import net.md_5.bungee.BungeeServerInfo;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.*;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.plugin.Command;
@@ -106,7 +106,7 @@ public class ServerManagerCommand extends Command {
                     return;
                 }
 
-                ServerInfo info = new BungeeServerInfo(args[1], new InetSocketAddress(22565), "", false);
+                ServerInfo info = ProxyServer.getInstance().constructServerInfo(args[1], new InetSocketAddress(22565), "", false);
                 ServerAddEvent addEvent = new ServerAddEvent(info, sender);
 
                 BungeeServerManager.get().getProxy().getPluginManager().callEvent(addEvent);
@@ -179,7 +179,7 @@ public class ServerManagerCommand extends Command {
                     return;
                 }
 
-                ServerInfo info = new BungeeServerInfo(args[1], address, "", false);
+                ServerInfo info = ProxyServer.getInstance().constructServerInfo(args[1], address, "", false);
                 ServerAddEvent addEvent = new ServerAddEvent(info, sender);
 
                 BungeeServerManager.get().getProxy().getPluginManager().callEvent(addEvent);
@@ -260,7 +260,7 @@ public class ServerManagerCommand extends Command {
                     info = modifiedEvent.getServerModified();
 
                     ServerHelper.removeServer(info.getName());
-                    ServerHelper.addServer(new BungeeServerInfo((String) modifiedEvent.getNewValue(), info.getAddress(), info.getMotd(), false));
+                    ServerHelper.addServer(ProxyServer.getInstance().constructServerInfo((String) modifiedEvent.getNewValue(), info.getAddress(), info.getMotd(), false));
                     sender.sendMessage(TextComponent.fromLegacyText(prefix + "Renamed " + ChatColor.GREEN + info.getName() + ChatColor.GRAY + " to " + ChatColor.GREEN + modifiedEvent.getNewValue() + ChatColor.GRAY + "."));
                     return;
                 }
@@ -284,7 +284,7 @@ public class ServerManagerCommand extends Command {
                     info = modifiedEvent.getServerModified();
 
                     ServerHelper.removeServer(info.getName());
-                    ServerHelper.addServer(new BungeeServerInfo(info.getName(), (InetSocketAddress) modifiedEvent.getNewValue(), info.getMotd(), false));
+                    ServerHelper.addServer(ProxyServer.getInstance().constructServerInfo(info.getName(), (InetSocketAddress) modifiedEvent.getNewValue(), info.getMotd(), false));
                     sender.sendMessage(TextComponent.fromLegacyText(prefix + "Set the ip address of " + ChatColor.GREEN + info.getName() + ChatColor.GRAY + " to " + ChatColor.GREEN + args[3] + ChatColor.GRAY + "."));
                     return;
                 }
@@ -301,7 +301,7 @@ public class ServerManagerCommand extends Command {
                     info = modifiedEvent.getServerModified();
 
                     ServerHelper.removeServer(info.getName());
-                    ServerHelper.addServer(new BungeeServerInfo(info.getName(), info.getAddress(), (String) modifiedEvent.getNewValue(), false));
+                    ServerHelper.addServer(ProxyServer.getInstance().constructServerInfo(info.getName(), info.getAddress(), (String) modifiedEvent.getNewValue(), false));
                     sender.sendMessage(TextComponent.fromLegacyText(prefix + "Set the motd of " + ChatColor.GREEN + info.getName() + ChatColor.GRAY + " to " + ChatColor.GREEN + ChatColor.translateAlternateColorCodes('&', args[3]) + ChatColor.GRAY + "."));
                     return;
                 }
@@ -335,7 +335,7 @@ public class ServerManagerCommand extends Command {
                 info = modifiedEvent.getServerModified();
 
                 ServerHelper.removeServer(info.getName());
-                ServerHelper.addServer(new BungeeServerInfo(info.getName(), info.getAddress(), (String) modifiedEvent.getNewValue(), false));
+                ServerHelper.addServer(ProxyServer.getInstance().constructServerInfo(info.getName(), info.getAddress(), (String) modifiedEvent.getNewValue(), false));
                 sender.sendMessage(TextComponent.fromLegacyText(prefix + "Set the motd of " + ChatColor.GREEN + info.getName() + ChatColor.GRAY + " to " + ChatColor.GREEN + ChatColor.translateAlternateColorCodes('&', builder.toString().trim()) + ChatColor.GRAY + "."));
                 return;
             }

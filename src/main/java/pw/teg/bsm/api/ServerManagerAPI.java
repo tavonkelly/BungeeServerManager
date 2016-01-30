@@ -1,6 +1,6 @@
 package pw.teg.bsm.api;
 
-import net.md_5.bungee.BungeeServerInfo;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import pw.teg.bsm.api.events.ServerAddEvent;
 import pw.teg.bsm.api.events.ServerRemoveEvent;
@@ -15,7 +15,7 @@ public class ServerManagerAPI {
             return false;
         }
 
-        ServerInfo serverInfo = new BungeeServerInfo(name, ipAddress, motd, restricted);
+        ServerInfo serverInfo = ProxyServer.getInstance().constructServerInfo(name, ipAddress, motd, restricted);
         ServerAddEvent addEvent = new ServerAddEvent(serverInfo, null);
 
         if (addEvent.isCancelled()) {
