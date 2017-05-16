@@ -13,7 +13,7 @@ Just drag the plugin file into your BungeeCord's plugin server.
 There's only one permission: `servermanager.use`
 
 ### Commands
-![Commands](http://i.imgur.com/dSg1YfX.png)
+![Commands](http://i.imgur.com/Jzng2aC.png)
 
 ### FAQ
 ###### Where's the config?<br />
