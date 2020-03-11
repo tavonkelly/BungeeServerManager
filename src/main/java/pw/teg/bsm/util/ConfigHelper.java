@@ -20,26 +20,17 @@ public class ConfigHelper {
     static {
         // Plugins are loaded before the config (on first run) so uhhhhh, here we go
         setupConfig();
-
-        if (locked) {
-            ProxyServer.getInstance().getScheduler().schedule(BungeeServerManager.get(), new Runnable() {
-                @Override
-                public void run() {
-                    setupConfig();
-                }
-            }, 5L, TimeUnit.SECONDS);
-        }
+        if (locked)
+            ProxyServer.getInstance().getScheduler().schedule(plugin, ServerConfig::setupConfig, 10L, TimeUnit.SECONDS);
     }
 
     public static void addToConfig(ServerInfo serverInfo) {
-        if (locked) {
-            return;
+        if (!locked) {
+            bungeeConfig.set("servers." + serverInfo.getName() + ".motd", serverInfo.getMotd().replace(ChatColor.COLOR_CHAR, '&'));
+            bungeeConfig.set("servers." + serverInfo.getName() + ".address", serverInfo.getAddress().getAddress().getHostAddress() + ":" + serverInfo.getAddress().getPort());
+            bungeeConfig.set("servers." + serverInfo.getName() + ".restricted", false);
+            saveConfig();
         }
-
-        bungeeConfig.set("servers." + serverInfo.getName() + ".motd", serverInfo.getMotd().replace(ChatColor.COLOR_CHAR, '&'));
-        bungeeConfig.set("servers." + serverInfo.getName() + ".address", serverInfo.getAddress().getAddress().getHostAddress() + ":" + serverInfo.getAddress().getPort());
-        bungeeConfig.set("servers." + serverInfo.getName() + ".restricted", false);
-        saveConfig();
     }
 
     public static void removeFromConfig(ServerInfo serverInfo) {
