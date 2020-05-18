@@ -249,7 +249,7 @@ public class ServerManagerCommand extends Command {
                         return;
                     }
 
-                    ServerModifiedEvent modifiedEvent = new ServerModifiedEvent<>(ServerHelper.getServerInfo(args[3]), sender, ServerModifiedEvent.ServerField.NAME, args[3]);
+                    ServerModifiedEvent modifiedEvent = new ServerModifiedEvent<>(ServerHelper.getServerInfo(args[1]), sender, ServerModifiedEvent.ServerField.NAME, args[3]);
 
                     BungeeServerManager.get().getProxy().getPluginManager().callEvent(modifiedEvent);
 
@@ -273,7 +273,7 @@ public class ServerManagerCommand extends Command {
                         return;
                     }
 
-                    ServerModifiedEvent modifiedEvent = new ServerModifiedEvent<>(ServerHelper.getServerInfo(args[3]), sender, ServerModifiedEvent.ServerField.IP, address);
+                    ServerModifiedEvent modifiedEvent = new ServerModifiedEvent<>(ServerHelper.getServerInfo(args[1]), sender, ServerModifiedEvent.ServerField.IP, address);
 
                     BungeeServerManager.get().getProxy().getPluginManager().callEvent(modifiedEvent);
 
@@ -290,7 +290,7 @@ public class ServerManagerCommand extends Command {
                 }
 
                 if (args[2].equalsIgnoreCase("motd")) {
-                    ServerModifiedEvent modifiedEvent = new ServerModifiedEvent<>(ServerHelper.getServerInfo(args[3]), sender, ServerModifiedEvent.ServerField.MOTD, ChatColor.translateAlternateColorCodes('&', args[3]));
+                    ServerModifiedEvent modifiedEvent = new ServerModifiedEvent<>(ServerHelper.getServerInfo(args[1]), sender, ServerModifiedEvent.ServerField.MOTD, ChatColor.translateAlternateColorCodes('&', args[3]));
 
                     BungeeServerManager.get().getProxy().getPluginManager().callEvent(modifiedEvent);
 

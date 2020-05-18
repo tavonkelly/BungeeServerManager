@@ -7,15 +7,14 @@ import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.YamlConfiguration;
 import pw.teg.bsm.BungeeServerManager;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.concurrent.TimeUnit;
 
 public class ConfigHelper {
 
     private static File file;
     private static Configuration bungeeConfig;
-    private static boolean locked;
+    private static boolean locked; // TODO: This is dumb. Writes are lost when locked
 
     static {
         // Plugins are loaded before the config (on first run) so uhhhhh, here we go
@@ -68,11 +67,27 @@ public class ConfigHelper {
     }
 
     private static void setupConfig() {
+        FileInputStream fis = null;
+        InputStreamReader isr = null;
         try {
             file = new File(ProxyServer.getInstance().getPluginsFolder().getParentFile(), "config.yml");
-            bungeeConfig = YamlConfiguration.getProvider(YamlConfiguration.class).load(file);
+
+            fis = new FileInputStream(file);
+            isr = new InputStreamReader(fis, "ISO-8859-1");
+
+            bungeeConfig = YamlConfiguration.getProvider(YamlConfiguration.class).load(isr);
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (fis != null) {
+                    fis.close();
+                }
+
+                if (isr != null) {
+                    isr.close();
+                }
+            } catch (IOException ignored) {}
         }
 
         locked = bungeeConfig == null;
