@@ -7,6 +7,7 @@ import pw.teg.bsm.api.events.ServerRemoveEvent;
 import pw.teg.bsm.util.ServerHelper;
 
 import java.net.InetSocketAddress;
+import java.util.Collection;
 
 public class ServerManagerAPI {
 
@@ -45,5 +46,9 @@ public class ServerManagerAPI {
 
     public boolean serverExists(String name) {
         return ServerHelper.serverExists(name);
+    }
+
+    public Collection<ServerInfo> listServers() {
+        return ServerHelper.getServers().values();
     }
 }
