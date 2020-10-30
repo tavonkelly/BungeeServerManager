@@ -36,7 +36,7 @@ public class ConfigHelper {
         }
 
         bungeeConfig.set("servers." + serverInfo.getName() + ".motd", serverInfo.getMotd().replace(ChatColor.COLOR_CHAR, '&'));
-        bungeeConfig.set("servers." + serverInfo.getName() + ".address", serverInfo.getAddress().getAddress().getHostAddress() + ":" + serverInfo.getAddress().getPort());
+        bungeeConfig.set("servers." + serverInfo.getName() + ".address", serverInfo.getSocketAddress().toString());
         bungeeConfig.set("servers." + serverInfo.getName() + ".restricted", false);
         saveConfig();
     }

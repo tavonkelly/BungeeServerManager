@@ -1,6 +1,7 @@
 package pw.teg.bsm.commands;
 
 import com.google.common.base.Joiner;
+import net.md_5.bungee.Util;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -14,6 +15,7 @@ import pw.teg.bsm.api.events.ServerRemoveEvent;
 import pw.teg.bsm.util.ServerHelper;
 
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 
 public class ServerManagerCommand extends Command {
 
@@ -172,10 +174,10 @@ public class ServerManagerCommand extends Command {
                     return;
                 }
 
-                InetSocketAddress address = getIp(args[2]);
+                SocketAddress address = getIp(args[2]);
 
                 if (address == null) {
-                    sender.sendMessage(TextComponent.fromLegacyText(prefix + "Invalid ip address " + ChatColor.GREEN + args[2] + ChatColor.GRAY + ". Here's an example: " + ChatColor.GREEN + "127.0.0.1:25565"));
+                    sender.sendMessage(TextComponent.fromLegacyText(prefix + "Invalid address " + ChatColor.GREEN + args[2] + ChatColor.GRAY + ". Here's an example: " + ChatColor.GREEN + "127.0.0.1:25565"));
                     return;
                 }
 
@@ -189,7 +191,7 @@ public class ServerManagerCommand extends Command {
                 }
 
                 ServerHelper.addServer(addEvent.getServerModified());
-                sender.sendMessage(TextComponent.fromLegacyText(prefix + "Added a server with the name " + ChatColor.GREEN + addEvent.getServerModified().getName() + ChatColor.GRAY + " and ip address " + ChatColor.GREEN + args[2] + ChatColor.GREEN + "."));
+                sender.sendMessage(TextComponent.fromLegacyText(prefix + "Added a server with the name " + ChatColor.GREEN + addEvent.getServerModified().getName() + ChatColor.GRAY + " and address " + ChatColor.GREEN + args[2] + ChatColor.GREEN + "."));
                 return;
             }
 
@@ -266,10 +268,10 @@ public class ServerManagerCommand extends Command {
                 }
 
                 if (args[2].equalsIgnoreCase("ip")) {
-                    InetSocketAddress address = getIp(args[3]);
+                    SocketAddress address = getIp(args[3]);
 
                     if (address == null) {
-                        sender.sendMessage(TextComponent.fromLegacyText(prefix + "Invalid ip address " + ChatColor.GREEN + args[2] + ChatColor.GRAY + ". Here's an example: " + ChatColor.GREEN + "127.0.0.1:25565"));
+                        sender.sendMessage(TextComponent.fromLegacyText(prefix + "Invalid address " + ChatColor.GREEN + args[2] + ChatColor.GRAY + ". Here's an example: " + ChatColor.GREEN + "127.0.0.1:25565"));
                         return;
                     }
 
@@ -285,7 +287,7 @@ public class ServerManagerCommand extends Command {
 
                     ServerHelper.removeServer(info.getName());
                     ServerHelper.addServer(ProxyServer.getInstance().constructServerInfo(info.getName(), (InetSocketAddress) modifiedEvent.getNewValue(), info.getMotd(), false));
-                    sender.sendMessage(TextComponent.fromLegacyText(prefix + "Set the ip address of " + ChatColor.GREEN + info.getName() + ChatColor.GRAY + " to " + ChatColor.GREEN + args[3] + ChatColor.GRAY + "."));
+                    sender.sendMessage(TextComponent.fromLegacyText(prefix + "Set the address of " + ChatColor.GREEN + info.getName() + ChatColor.GRAY + " to " + ChatColor.GREEN + args[3] + ChatColor.GRAY + "."));
                     return;
                 }
 
@@ -379,7 +381,7 @@ public class ServerManagerCommand extends Command {
         sender.sendMessage(getHelpString("/svm help", "Display this help menu"));
         sender.sendMessage(getHelpString("/svm list", "List servers"));
         sender.sendMessage(getHelpString("/svm info <server>", "Display info about a server"));
-        sender.sendMessage(getHelpString("/svm add <name> [ip:port]", "Add a server to BungeeCord"));
+        sender.sendMessage(getHelpString("/svm add <name> [hostname]", "Add a server to BungeeCord"));
         sender.sendMessage(getHelpString("/svm remove <server>", "Remove a server from BungeeCord"));
         sender.sendMessage(getHelpString("/svm edit <server>", "Edit a server's information"));
     }
@@ -401,37 +403,15 @@ public class ServerManagerCommand extends Command {
     private void sendEditMenu(CommandSender sender, String serverName) {
         sender.sendMessage(TextComponent.fromLegacyText(prefix + " Edit Help:"));
         sender.sendMessage(getHelpString("/svm edit " + serverName + " name <name>", "Change this server's name"));
-        sender.sendMessage(getHelpString("/svm edit " + serverName + " ip <ip>", "Change this server's ip address"));
+        sender.sendMessage(getHelpString("/svm edit " + serverName + " ip <hostname>", "Change this server's address"));
         sender.sendMessage(getHelpString("/svm edit " + serverName + " motd <motd>", "Change this server's motd"));
     }
 
-    private InetSocketAddress getIp(String input) {
-        if (!input.contains(":") || !input.contains(".")) {
+    private SocketAddress getIp(String input) {
+        try {
+            return Util.getAddr(input);
+        } catch (IllegalArgumentException exec) {
             return null;
         }
-
-        String[] parts = input.split(":");
-
-        if (input.split(":").length != 2) {
-            return null;
-        }
-
-        if (input.split("\\.").length != 4) {
-            return null;
-        }
-
-        for (char c : parts[0].replace(".", "").toCharArray()) {
-            if (!Character.isDigit(c)) {
-                return null;
-            }
-        }
-
-        for (char c : parts[1].toCharArray()) {
-            if (!Character.isDigit(c)) {
-                return null;
-            }
-        }
-
-        return new InetSocketAddress(parts[0], Integer.valueOf(parts[1]));
     }
 }
