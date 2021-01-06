@@ -52,7 +52,7 @@ public class ConfigHelper {
 
         bungeeConfig.set("servers." + serverInfo.getName() + ".motd", serverInfo.getMotd().replace(ChatColor.COLOR_CHAR, '&'));
         bungeeConfig.set("servers." + serverInfo.getName() + ".address", addressString);
-        bungeeConfig.set("servers." + serverInfo.getName() + ".restricted", false);
+        bungeeConfig.set("servers." + serverInfo.getName() + ".restricted", serverInfo.isRestricted());
         saveConfig();
     }
 

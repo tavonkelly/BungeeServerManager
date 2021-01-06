@@ -97,6 +97,7 @@ public class ServerManagerCommand extends Command {
                 sender.sendMessage(TextComponent.fromLegacyText(ChatColor.GREEN + "Name: " + ChatColor.GRAY + info.getName()));
                 sender.sendMessage(TextComponent.fromLegacyText(ChatColor.GREEN + "Address: " + ChatColor.GRAY + info.getAddress().getAddress().getHostAddress() + ":" + info.getAddress().getPort()));
                 sender.sendMessage(TextComponent.fromLegacyText(ChatColor.GREEN + "Motd: " + ChatColor.GRAY + info.getMotd()));
+                sender.sendMessage(TextComponent.fromLegacyText(ChatColor.GREEN + "Restricted: " + ChatColor.GRAY + info.isRestricted()));
                 sender.sendMessage(TextComponent.fromLegacyText(ChatColor.GREEN + "Player Count: " + ChatColor.GRAY + info.getPlayers().size()));
                 sender.sendMessage(TextComponent.fromLegacyText(ChatColor.GRAY + "--------"));
                 return;
@@ -308,6 +309,23 @@ public class ServerManagerCommand extends Command {
                     return;
                 }
 
+                if (args[2].equalsIgnoreCase("restricted")) {
+                    ServerModifiedEvent<Boolean> modifiedEvent = new ServerModifiedEvent<>(info, sender, ServerModifiedEvent.ServerField.RESTRICTED, Boolean.parseBoolean(args[3]));
+
+                    BungeeServerManager.get().getProxy().getPluginManager().callEvent(modifiedEvent);
+
+                    if (modifiedEvent.isCancelled()) {
+                        return;
+                    }
+
+                    info = modifiedEvent.getServerModified();
+
+                    ServerHelper.removeServer(info.getName());
+                    ServerHelper.addServer(ProxyServer.getInstance().constructServerInfo(info.getName(), info.getSocketAddress(), info.getMotd(), modifiedEvent.getNewValue()));
+                    sender.sendMessage(TextComponent.fromLegacyText(prefix + "Set the restriction of " + ChatColor.GREEN + info.getName() + ChatColor.GRAY + " to " + ChatColor.GREEN + Boolean.parseBoolean(args[3]) + ChatColor.GRAY + "."));
+                    return;
+                }
+
                 return;
             }
         }
@@ -405,6 +423,7 @@ public class ServerManagerCommand extends Command {
         sender.sendMessage(getHelpString("/svm edit " + serverName + " name <name>", "Change this server's name"));
         sender.sendMessage(getHelpString("/svm edit " + serverName + " ip <hostname>", "Change this server's address"));
         sender.sendMessage(getHelpString("/svm edit " + serverName + " motd <motd>", "Change this server's motd"));
+        sender.sendMessage(getHelpString("/svm edit " + serverName + " restricted <true|false>", "Change this server's restricted flag"));
     }
 
     private SocketAddress getIp(String input) {

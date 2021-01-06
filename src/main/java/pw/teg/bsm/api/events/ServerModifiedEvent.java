@@ -45,6 +45,6 @@ public class ServerModifiedEvent<T> extends ServerEvent implements Cancellable {
     }
 
     public enum ServerField {
-        NAME, IP, MOTD
+        NAME, IP, MOTD, RESTRICTED
     }
 }
