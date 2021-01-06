@@ -88,7 +88,7 @@ public class ConfigHelper {
             file = new File(ProxyServer.getInstance().getPluginsFolder().getParentFile(), "config.yml");
 
             fis = new FileInputStream(file);
-            isr = new InputStreamReader(fis, "ISO-8859-1");
+            isr = new InputStreamReader(fis);
 
             bungeeConfig = YamlConfiguration.getProvider(YamlConfiguration.class).load(isr);
         } catch (IOException e) {
