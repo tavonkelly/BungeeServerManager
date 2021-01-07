@@ -12,6 +12,7 @@ import pw.teg.bsm.BungeeServerManager;
 import pw.teg.bsm.api.events.ServerAddEvent;
 import pw.teg.bsm.api.events.ServerModifiedEvent;
 import pw.teg.bsm.api.events.ServerRemoveEvent;
+import pw.teg.bsm.util.ConfigHelper;
 import pw.teg.bsm.util.ServerHelper;
 
 import java.net.InetSocketAddress;
@@ -95,7 +96,7 @@ public class ServerManagerCommand extends Command {
 
                 sender.sendMessage(TextComponent.fromLegacyText(ChatColor.GRAY + "--- " + ChatColor.GREEN + info.getName() + " Info" + ChatColor.GRAY + " ---"));
                 sender.sendMessage(TextComponent.fromLegacyText(ChatColor.GREEN + "Name: " + ChatColor.GRAY + info.getName()));
-                sender.sendMessage(TextComponent.fromLegacyText(ChatColor.GREEN + "Address: " + ChatColor.GRAY + info.getAddress().getAddress().getHostAddress() + ":" + info.getAddress().getPort()));
+                sender.sendMessage(TextComponent.fromLegacyText(ChatColor.GREEN + "Address: " + ChatColor.GRAY + ConfigHelper.socketAddressToString(info.getSocketAddress())));
                 sender.sendMessage(TextComponent.fromLegacyText(ChatColor.GREEN + "Motd: " + ChatColor.GRAY + info.getMotd()));
                 sender.sendMessage(TextComponent.fromLegacyText(ChatColor.GREEN + "Restricted: " + ChatColor.GRAY + info.isRestricted()));
                 sender.sendMessage(TextComponent.fromLegacyText(ChatColor.GREEN + "Player Count: " + ChatColor.GRAY + info.getPlayers().size()));

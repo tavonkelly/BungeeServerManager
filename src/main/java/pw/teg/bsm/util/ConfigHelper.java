@@ -33,25 +33,29 @@ public class ConfigHelper {
         }
     }
 
-    public static void addToConfig(ServerInfo serverInfo) {
-        if (locked) {
-            return;
-        }
-
-        SocketAddress socketAddress = serverInfo.getSocketAddress();
+    public static String socketAddressToString(SocketAddress socketAddress) {
         String addressString;
 
         if (socketAddress instanceof DomainSocketAddress) {
             addressString = "unix:" + ((DomainSocketAddress) socketAddress).path();
         } else if (socketAddress instanceof InetSocketAddress) {
             InetSocketAddress inetAddress = (InetSocketAddress) socketAddress;
-            addressString = inetAddress.getAddress().getHostAddress() + ":" + inetAddress.getPort();
+
+            addressString = inetAddress.getHostString() + ":" + inetAddress.getPort();
         } else {
             addressString = socketAddress.toString();
         }
 
+        return addressString;
+    }
+
+    public static void addToConfig(ServerInfo serverInfo) {
+        if (locked) {
+            return;
+        }
+
         bungeeConfig.set("servers." + serverInfo.getName() + ".motd", serverInfo.getMotd().replace(ChatColor.COLOR_CHAR, '&'));
-        bungeeConfig.set("servers." + serverInfo.getName() + ".address", addressString);
+        bungeeConfig.set("servers." + serverInfo.getName() + ".address", socketAddressToString(serverInfo.getSocketAddress()));
         bungeeConfig.set("servers." + serverInfo.getName() + ".restricted", serverInfo.isRestricted());
         saveConfig();
     }
