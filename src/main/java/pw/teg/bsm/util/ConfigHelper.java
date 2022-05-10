@@ -11,6 +11,9 @@ import pw.teg.bsm.BungeeServerManager;
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class ConfigHelper {
@@ -34,6 +37,10 @@ public class ConfigHelper {
     }
 
     public static String socketAddressToString(SocketAddress socketAddress) {
+        return socketAddressToString(socketAddress, true);
+    }
+
+    public static String socketAddressToString(SocketAddress socketAddress, boolean appendPort) {
         String addressString;
 
         if (socketAddress instanceof DomainSocketAddress) {
@@ -41,7 +48,11 @@ public class ConfigHelper {
         } else if (socketAddress instanceof InetSocketAddress) {
             InetSocketAddress inetAddress = (InetSocketAddress) socketAddress;
 
-            addressString = inetAddress.getHostString() + ":" + inetAddress.getPort();
+            addressString = inetAddress.getHostString();
+
+            if (appendPort) {
+                addressString += ":" + inetAddress.getPort();
+            }
         } else {
             addressString = socketAddress.toString();
         }
@@ -70,6 +81,59 @@ public class ConfigHelper {
         }
 
         bungeeConfig.set("servers." + name, null);
+        saveConfig();
+    }
+
+    public static void addForcedHost(SocketAddress host, ServerInfo server) {
+        changeForcedHost(host, false, server);
+    }
+
+    public static void removeForcedHost(SocketAddress host, ServerInfo server) {
+        changeForcedHost(host, true, server);
+    }
+
+    private static void changeForcedHost(SocketAddress host, boolean remove, ServerInfo server) {
+        if (locked) {
+            return;
+        }
+
+        List<?> listeners = bungeeConfig.getList("listeners");
+        List<Object> listenersCopy = new ArrayList<>(listeners);
+
+        for (int i = 0; i < listeners.size(); i++) {
+            Object listenerObj = listeners.get(i);
+
+            if (!(listenerObj instanceof Map)) {
+                continue;
+            }
+
+            @SuppressWarnings("unchecked")
+            Map<String, Object> listenerMap = (Map<String, Object>) listenerObj;
+
+            Object forcedHostsObj = listenerMap.get("forced_hosts");
+
+            if (!(forcedHostsObj instanceof Map)) {
+                continue;
+            }
+
+            @SuppressWarnings("unchecked")
+            Map<String, String> forcedHostsMap = (Map<String, String>) forcedHostsObj;
+
+            String socketAddressStr = socketAddressToString(host, false);
+
+            if (remove) {
+                if (forcedHostsMap.get(socketAddressStr) != null && forcedHostsMap.get(socketAddressStr).equalsIgnoreCase(server.getName())) {
+                    forcedHostsMap.remove(socketAddressStr);
+                }
+            } else {
+                forcedHostsMap.put(socketAddressStr, server.getName());
+            }
+
+            listenerMap.put("forced_hosts", forcedHostsMap);
+            listenersCopy.set(i, listenerMap);
+        }
+
+        bungeeConfig.set("listeners", listenersCopy);
         saveConfig();
     }
 

@@ -6,6 +6,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.*;
+import net.md_5.bungee.api.config.ListenerInfo;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.plugin.Command;
 import pw.teg.bsm.BungeeServerManager;
@@ -17,6 +18,7 @@ import pw.teg.bsm.util.ServerHelper;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.util.*;
 
 public class ServerManagerCommand extends Command {
 
@@ -66,12 +68,25 @@ public class ServerManagerCommand extends Command {
                 return;
             }
 
+            Set<String> forcedHosts = new HashSet<>();
+
+            for (ListenerInfo listenerInfo : BungeeServerManager.get().getProxy().getConfig().getListeners()) {
+                for (Map.Entry<String, String> entry : listenerInfo.getForcedHosts().entrySet()) {
+                    if (entry.getValue().equalsIgnoreCase(info.getName())) {
+                        forcedHosts.add(entry.getKey());
+                    }
+                }
+            }
+
             sender.sendMessage(TextComponent.fromLegacyText(ChatColor.GRAY + "--- " + ChatColor.GREEN + info.getName() + " Info" + ChatColor.GRAY + " ---"));
             sender.sendMessage(TextComponent.fromLegacyText(ChatColor.GREEN + "Name: " + ChatColor.GRAY + info.getName()));
             sender.sendMessage(TextComponent.fromLegacyText(ChatColor.GREEN + "Address: " + ChatColor.GRAY + ConfigHelper.socketAddressToString(info.getSocketAddress())));
             sender.sendMessage(TextComponent.fromLegacyText(ChatColor.GREEN + "Motd: " + ChatColor.GRAY + info.getMotd()));
             sender.sendMessage(TextComponent.fromLegacyText(ChatColor.GREEN + "Restricted: " + ChatColor.GRAY + info.isRestricted()));
             sender.sendMessage(TextComponent.fromLegacyText(ChatColor.GREEN + "Player Count: " + ChatColor.GRAY + info.getPlayers().size()));
+            if (!forcedHosts.isEmpty()) {
+                sender.sendMessage(TextComponent.fromLegacyText(ChatColor.GREEN + "Forced Hosts: " + ChatColor.GRAY + Joiner.on(", ").join(forcedHosts)));
+            }
             sender.sendMessage(TextComponent.fromLegacyText(ChatColor.GRAY + "--------"));
             return;
         }
@@ -189,7 +204,7 @@ public class ServerManagerCommand extends Command {
                 SocketAddress address = getIp(args[3]);
 
                 if (address == null) {
-                    sender.sendMessage(TextComponent.fromLegacyText(prefix + "Invalid address " + ChatColor.GREEN + args[2] + ChatColor.GRAY + ". Here's an example: " + ChatColor.GREEN + "127.0.0.1:25565"));
+                    sender.sendMessage(TextComponent.fromLegacyText(prefix + "Invalid address " + ChatColor.GREEN + args[3] + ChatColor.GRAY + ". Here's an example: " + ChatColor.GREEN + "127.0.0.1:25565"));
                     return;
                 }
 
@@ -259,6 +274,59 @@ public class ServerManagerCommand extends Command {
                 return;
             }
 
+            if (args[2].equalsIgnoreCase("domain")) {
+                if (args.length < 5 || (!args[3].equalsIgnoreCase("add") && !args[3].equalsIgnoreCase("remove"))) {
+                    sendUsage(sender, "/svm edit " + info.getName() + " domain <add|remove> <domain>");
+                    return;
+                }
+
+                boolean addingDomain = args[3].equalsIgnoreCase("add");
+                final SocketAddress address = getIp(args[4]);
+
+                if (address == null) {
+                    sender.sendMessage(TextComponent.fromLegacyText(prefix + "Invalid address " + ChatColor.GREEN + args[4] + ChatColor.GRAY + ". Here's an example: " + ChatColor.GREEN + "pvp.md-5.net"));
+                    return;
+                }
+
+                String socketAddressStr = ConfigHelper.socketAddressToString(address, false);
+
+                if (addingDomain) {
+                    ConfigHelper.addForcedHost(address, info);
+
+                    for (ListenerInfo listenerInfo : BungeeServerManager.get().getProxy().getConfig().getListeners()) {
+                        listenerInfo.getForcedHosts().put(socketAddressStr, info.getName());
+                    }
+
+                    sender.sendMessage(TextComponent.fromLegacyText(prefix + "Added forced host of " + ChatColor.GREEN +
+                            socketAddressStr + " " + ChatColor.GRAY + " for server " + ChatColor.GREEN +
+                            info.getName() + " " + ChatColor.GRAY + "."));
+                } else {
+                    boolean found = false;
+
+                    ConfigHelper.removeForcedHost(address, info);
+
+                    for (ListenerInfo listenerInfo : BungeeServerManager.get().getProxy().getConfig().getListeners()) {
+                        String targetServer = listenerInfo.getForcedHosts().get(socketAddressStr);
+
+                        if (targetServer != null && targetServer.equalsIgnoreCase(info.getName())) {
+                            listenerInfo.getForcedHosts().remove(socketAddressStr);
+                            found = true;
+                        }
+                    }
+
+                    if (found) {
+                        sender.sendMessage(TextComponent.fromLegacyText(prefix + "Removed forced host of " +
+                                ChatColor.GREEN + socketAddressStr + " " + ChatColor.GRAY + " for server " +
+                                ChatColor.GREEN + info.getName() + " " + ChatColor.GRAY + "."));
+                    } else {
+                        sender.sendMessage(TextComponent.fromLegacyText(prefix + "Could not find forced host of " +
+                                ChatColor.GREEN + socketAddressStr + " " + ChatColor.GRAY + " for server " +
+                                ChatColor.GREEN + info.getName() + " " + ChatColor.GRAY + "."));
+                    }
+                }
+                return;
+            }
+
             sender.sendMessage(TextComponent.fromLegacyText(prefix + "Unknown argument " + ChatColor.GREEN + args[2] + ChatColor.GRAY + " use " + ChatColor.GREEN + "/svm edit " + info.getName() + ChatColor.GRAY + " for help."));
             return;
         }
@@ -296,6 +364,7 @@ public class ServerManagerCommand extends Command {
         sender.sendMessage(getHelpString("/svm edit " + serverName + " ip <hostname>", "Change this server's address"));
         sender.sendMessage(getHelpString("/svm edit " + serverName + " motd <motd>", "Change this server's motd"));
         sender.sendMessage(getHelpString("/svm edit " + serverName + " restricted <true|false>", "Change this server's restricted flag"));
+        sender.sendMessage(getHelpString("/svm edit " + serverName + " domain <add|remove> <domain>", "Add or remove a forced host for this server"));
     }
 
     private SocketAddress getIp(String input) {
