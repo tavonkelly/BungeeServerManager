@@ -298,8 +298,8 @@ public class ServerManagerCommand extends Command {
                     }
 
                     sender.sendMessage(TextComponent.fromLegacyText(prefix + "Added forced host of " + ChatColor.GREEN +
-                            socketAddressStr + " " + ChatColor.GRAY + " for server " + ChatColor.GREEN +
-                            info.getName() + " " + ChatColor.GRAY + "."));
+                            socketAddressStr + ChatColor.GRAY + " for server " + ChatColor.GREEN +
+                            info.getName() + ChatColor.GRAY + "."));
                 } else {
                     boolean found = false;
 
@@ -316,12 +316,12 @@ public class ServerManagerCommand extends Command {
 
                     if (found) {
                         sender.sendMessage(TextComponent.fromLegacyText(prefix + "Removed forced host of " +
-                                ChatColor.GREEN + socketAddressStr + " " + ChatColor.GRAY + " for server " +
-                                ChatColor.GREEN + info.getName() + " " + ChatColor.GRAY + "."));
+                                ChatColor.GREEN + socketAddressStr + ChatColor.GRAY + " for server " +
+                                ChatColor.GREEN + info.getName() + ChatColor.GRAY + "."));
                     } else {
                         sender.sendMessage(TextComponent.fromLegacyText(prefix + "Could not find forced host of " +
-                                ChatColor.GREEN + socketAddressStr + " " + ChatColor.GRAY + " for server " +
-                                ChatColor.GREEN + info.getName() + " " + ChatColor.GRAY + "."));
+                                ChatColor.GREEN + socketAddressStr + ChatColor.GRAY + " for server " +
+                                ChatColor.GREEN + info.getName() + ChatColor.GRAY + "."));
                     }
                 }
                 return;
